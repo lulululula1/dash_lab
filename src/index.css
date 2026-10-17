@@ -1,0 +1,400 @@
+@import "tailwindcss";
+
+@theme {
+  --color-void: #050816;
+  --color-deep: #0a1030;
+  --color-navy: #0f1a44;
+  --color-cyan: #22d3ee;
+  --color-cyan-soft: #67e8f9;
+  --color-violet: #a78bfa;
+  --color-violet-deep: #7c3aed;
+  --color-ink: #e6f1ff;
+  --color-muted: #8da2c8;
+  --color-dim: #5b6b91;
+  --color-ok: #34d399;
+  --color-warn: #fbbf24;
+  --color-bad: #fb7185;
+  --font-display: "Orbitron", "Noto Sans KR", system-ui, sans-serif;
+  --font-sans: "Noto Sans KR", "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Consolas", monospace;
+}
+
+:root {
+  color-scheme: dark;
+  --glass-bg: rgba(14, 24, 64, 0.48);
+  --glass-border: rgba(103, 232, 249, 0.16);
+  --glow-cyan: 0 0 24px rgba(34, 211, 238, 0.35);
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-void);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(34, 211, 238, 0.35);
+}
+
+/* ---------- 배경 ---------- */
+.nexus-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(1200px 700px at 12% -10%, rgba(34, 211, 238, 0.13), transparent 60%),
+    radial-gradient(1000px 700px at 100% 110%, rgba(124, 58, 237, 0.18), transparent 60%),
+    linear-gradient(180deg, #060a1f 0%, #050816 100%);
+}
+.nexus-grid {
+  position: absolute;
+  inset: -50%;
+  background-image:
+    linear-gradient(rgba(103, 232, 249, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(103, 232, 249, 0.06) 1px, transparent 1px);
+  background-size: 56px 56px;
+  transform: perspective(900px) rotateX(58deg) translateY(-8%);
+  transform-origin: center top;
+  mask-image: radial-gradient(ellipse at 50% 30%, black 20%, transparent 70%);
+  animation: grid-drift 24s linear infinite;
+}
+.nexus-scanline {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 3px);
+}
+@keyframes grid-drift {
+  to {
+    background-position: 0 56px, 56px 0;
+  }
+}
+
+/* 컴포넌트 스타일은 Tailwind 유틸리티가 덮어쓸 수 있도록 components 레이어에 둔다. */
+@layer components {
+/* ---------- 글래스 패널 ---------- */
+.glass {
+  position: relative;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 20px 50px -20px rgba(0, 0, 0, 0.6);
+  isolation: isolate;
+}
+/* 포인터 위치를 따라 테두리가 빛나는 효과 */
+.glass.reactive::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(260px circle at var(--mx, -999px) var(--my, -999px), rgba(103, 232, 249, 0.75), rgba(167, 139, 250, 0.35) 40%, transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.25s;
+  pointer-events: none;
+  z-index: -1;
+}
+.glass.reactive:hover::before {
+  opacity: 1;
+}
+.glass-corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: rgba(103, 232, 249, 0.6);
+  pointer-events: none;
+}
+
+.panel-title {
+  font-family: var(--font-display);
+  letter-spacing: 0.14em;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  color: var(--color-cyan-soft);
+}
+
+.text-gradient {
+  background: linear-gradient(100deg, #67e8f9 0%, #a5b4fc 45%, #c4b5fd 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------- 버튼 ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 12px;
+  padding: 0.6rem 1.1rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease;
+  cursor: pointer;
+  user-select: none;
+}
+.btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+.btn:focus-visible,
+.chip:focus-visible,
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 2px;
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: linear-gradient(120deg, rgba(34, 211, 238, 0.95), rgba(124, 58, 237, 0.9));
+  color: #04101f;
+  font-weight: 700;
+  box-shadow: 0 8px 30px -8px rgba(34, 211, 238, 0.6);
+}
+.btn-primary:hover:not(:disabled) {
+  box-shadow:
+    0 10px 40px -6px rgba(34, 211, 238, 0.8),
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+}
+.btn-ghost {
+  background: rgba(15, 26, 68, 0.6);
+  border: 1px solid rgba(103, 232, 249, 0.2);
+  color: var(--color-ink);
+}
+.btn-ghost:hover:not(:disabled) {
+  border-color: rgba(103, 232, 249, 0.6);
+  box-shadow: var(--glow-cyan);
+}
+.btn-icon {
+  padding: 0.45rem;
+  border-radius: 10px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.78rem;
+  border: 1px solid rgba(103, 232, 249, 0.2);
+  background: rgba(10, 16, 48, 0.6);
+  color: var(--color-muted);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.chip:hover {
+  color: var(--color-ink);
+  border-color: rgba(103, 232, 249, 0.5);
+}
+.chip[aria-pressed="true"] {
+  color: #04101f;
+  background: var(--color-cyan);
+  border-color: var(--color-cyan);
+  box-shadow: 0 0 14px rgba(34, 211, 238, 0.45);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 6px;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.badge-cyan {
+  color: var(--color-cyan-soft);
+  background: rgba(34, 211, 238, 0.12);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+}
+.badge-violet {
+  color: #c4b5fd;
+  background: rgba(167, 139, 250, 0.12);
+  border: 1px solid rgba(167, 139, 250, 0.3);
+}
+.badge-warn {
+  color: var(--color-warn);
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
+.badge-bad {
+  color: var(--color-bad);
+  background: rgba(251, 113, 133, 0.1);
+  border: 1px solid rgba(251, 113, 133, 0.35);
+}
+.badge-ok {
+  color: var(--color-ok);
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.select {
+  appearance: none;
+  background: rgba(10, 16, 48, 0.8)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2367e8f9' fill='none' stroke-width='1.5'/%3E%3C/svg%3E")
+    no-repeat right 0.7rem center;
+  border: 1px solid rgba(103, 232, 249, 0.22);
+  border-radius: 10px;
+  color: var(--color-ink);
+  padding: 0.45rem 2rem 0.45rem 0.75rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.select:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 1px;
+}
+.select option {
+  background: #0a1030;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 스크롤바 ---------- */
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(103, 232, 249, 0.3) transparent;
+}
+
+/* ---------- 스캔 ---------- */
+.radar {
+  position: relative;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 0 32%, rgba(34, 211, 238, 0.14) 32.5% 33%, transparent 33.5% 65%, rgba(34, 211, 238, 0.14) 65.5% 66%, transparent 66.5%),
+    radial-gradient(circle, rgba(15, 26, 68, 0.6), rgba(5, 8, 22, 0.9));
+  border: 1px solid rgba(103, 232, 249, 0.3);
+  box-shadow:
+    0 0 60px rgba(34, 211, 238, 0.15),
+    inset 0 0 40px rgba(34, 211, 238, 0.08);
+  overflow: hidden;
+}
+.radar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, rgba(34, 211, 238, 0.45), transparent 22%);
+  animation: radar-sweep 2.4s linear infinite;
+}
+.radar.paused::after {
+  animation-play-state: paused;
+  opacity: 0.3;
+}
+@keyframes radar-sweep {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.progress-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(103, 232, 249, 0.1);
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #22d3ee, #a78bfa);
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.7);
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-ok);
+  box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.6);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  70% {
+    box-shadow: 0 0 0 10px rgba(52, 211, 153, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
+  }
+}
+
+.dropzone {
+  border: 1.5px dashed rgba(103, 232, 249, 0.35);
+  transition: all 0.25s;
+}
+.dropzone.active {
+  border-color: var(--color-cyan);
+  background: rgba(34, 211, 238, 0.08);
+  box-shadow:
+    0 0 0 4px rgba(34, 211, 238, 0.1),
+    var(--glow-cyan);
+}
+
+table.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+table.data-table th {
+  text-align: left;
+  font-weight: 500;
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid rgba(103, 232, 249, 0.18);
+  position: sticky;
+  top: 0;
+  background: rgba(10, 16, 48, 0.95);
+}
+table.data-table td {
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid rgba(103, 232, 249, 0.07);
+}
+table.data-table tr:hover td {
+  background: rgba(34, 211, 238, 0.05);
+}
+
+}
+
+/* 애니메이션 끄기 설정 또는 OS 설정 존중 */
+.motion-off *,
+.motion-off *::before,
+.motion-off *::after {
+  animation-duration: 0s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0s !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nexus-grid,
+  .radar::after,
+  .pulse-dot {
+    animation: none;
+  }
+}
